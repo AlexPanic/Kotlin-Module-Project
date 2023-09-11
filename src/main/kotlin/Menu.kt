@@ -10,7 +10,7 @@ class Menu(var screen: String) {
     var curArchiveIndex: Int = UNPICKED
     var curNoteIndex: Int = UNPICKED
     init {
-        storage.add(Archive("A1", mutableListOf<Note>()))
+        //storage.add(Archive("A1", mutableListOf<Note>()))
     }
     fun render() {
         while (true) {
@@ -66,8 +66,8 @@ class Menu(var screen: String) {
                     screen = editScreen
                     return input!!-1
                 }
-                null -> println("Нет такого пункта меню. Нужно ввести корректное число")
-                else -> println("Нужно ввести число")
+                null -> println("Нужно ввести число")
+                else -> println("Нет такого пункта меню. Нужно ввести корректное число")
             }
         }
     }
