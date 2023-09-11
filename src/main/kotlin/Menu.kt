@@ -29,11 +29,21 @@ class Menu(var screen: String) {
                 }
                 Note.Headers.NEW.alias -> {
                     storage[curArchiveIndex].notes.add(Note(getNew(storage[curArchiveIndex].notes), null))
-                    screen = Note.Headers.LIST.alias
+                    curNoteIndex = storage[curArchiveIndex].notes.size-1
+                    screen = Note.Headers.ADDTEXT.alias
+                }
+                Note.Headers.ADDTEXT.alias -> {
+                    addText()
                 }
                 Note.Headers.LIST.alias -> {
                     list(storage[curArchiveIndex].notes)
                     curNoteIndex = getPick(storage[curArchiveIndex].notes, Note.Headers.NEW.alias, Note.Headers.SHOW.alias, Archive.Headers.LIST.alias)
+                }
+                Note.Headers.SHOW.alias -> {
+                    println("${storage[curArchiveIndex].name}/${storage[curArchiveIndex].notes[curNoteIndex].name}")
+                    println("${storage[curArchiveIndex].notes[curNoteIndex].text}")
+                    println("(Введите любой символ чтобы вернуться к списку заметок)")
+                    backToNotes()
                 }
                 else -> return println("Неизвестный экран приложения")
             }
@@ -91,6 +101,36 @@ class Menu(var screen: String) {
             println("${k+1}.${list[k].name}");
         }
         println("${list.size+1}.Выход")
+    }
+
+    fun addText() {
+        while (true) {
+            println("(Введите текст или 0 чтобы отменить создание заметки)")
+            val input = Scanner(System.`in`).nextLine().toString()
+            if (!input.isEmpty()) {
+                when (input) {
+                    "0" -> {
+                        screen = Note.Headers.LIST.alias
+                        storage[curArchiveIndex].notes.removeAt(curNoteIndex)
+                    }
+                    else -> {
+                        storage[curArchiveIndex].notes[curNoteIndex].text = input
+                        screen = Note.Headers.SHOW.alias
+                    }
+                }
+                return
+            }
+        }
+    }
+
+    fun backToNotes() {
+        while (true) {
+            val input = Scanner(System.`in`).nextLine().toString()
+            if (!input.isEmpty()) {
+                screen = Note.Headers.LIST.alias
+                return
+            }
+        }
     }
 
 }
