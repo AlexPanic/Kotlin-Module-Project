@@ -4,4 +4,7 @@ data class Note(override val name: String, val text: String?):Listable {
         NEW("Новая заметка"),
         SHOW("Содержимое заметки")
     }
+    companion object {
+        const val UNPICKED = -1
+    }
 }
