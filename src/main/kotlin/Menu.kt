@@ -20,15 +20,15 @@ class Menu(var screen: String) {
             println("$screen:")
             when (screen) {
                 Archive.Headers.LIST.alias -> {
-                    list(storage)
-                    curArchiveIndex = getPick(storage, Archive.Headers.NEW.alias, Note.Headers.LIST.alias, Archive.Headers.EXIT.alias)
+                    Common.list(storage)
+                    curArchiveIndex = Common.getPick(this, storage, Archive.Headers.NEW.alias, Note.Headers.LIST.alias, Archive.Headers.EXIT.alias)
                 }
                 Archive.Headers.NEW.alias -> {
-                    storage.add(Archive(getNew(storage), mutableListOf()))
+                    storage.add(Archive(Common.getNew(storage), mutableListOf()))
                     screen = Archive.Headers.LIST.alias
                 }
                 Note.Headers.NEW.alias -> {
-                    storage[curArchiveIndex].notes.add(Note(getNew(storage[curArchiveIndex].notes), null))
+                    storage[curArchiveIndex].notes.add(Note(Common.getNew(storage[curArchiveIndex].notes), null))
                     curNoteIndex = storage[curArchiveIndex].notes.size-1
                     screen = Note.Headers.ADDTEXT.alias
                 }
@@ -36,8 +36,8 @@ class Menu(var screen: String) {
                     addText()
                 }
                 Note.Headers.LIST.alias -> {
-                    list(storage[curArchiveIndex].notes)
-                    curNoteIndex = getPick(storage[curArchiveIndex].notes, Note.Headers.NEW.alias, Note.Headers.SHOW.alias, Archive.Headers.LIST.alias)
+                    Common.list(storage[curArchiveIndex].notes)
+                    curNoteIndex = Common.getPick(this, storage[curArchiveIndex].notes, Note.Headers.NEW.alias, Note.Headers.SHOW.alias, Archive.Headers.LIST.alias)
                 }
                 Note.Headers.SHOW.alias -> {
                     println("${storage[curArchiveIndex].name}/${storage[curArchiveIndex].notes[curNoteIndex].name}")
@@ -50,76 +50,16 @@ class Menu(var screen: String) {
         }
     }
 
-    fun <T:Listable>contains(name: String, ar: MutableList<T>): Boolean {
-        for (item in ar) {
-            if (item.name == name) {
-                return true
-            }
-        }
-        return false
-    }
-
-    fun <T:Listable>getPick(list: MutableList<T>, newScreen:String, editScreen: String, backScreen: String):Int {
-        while (true) {
-            println("Введите номер нужного пункта меню");
-            val input = Scanner(System.`in`).nextLine().toIntOrNull()
-            when (input) {
-                0 -> {
-                    screen = newScreen
-                    return UNPICKED
-                }
-                list.size+1 -> {
-                    screen = backScreen
-                    return UNPICKED
-                }
-                in 1..list.size -> {
-                    screen = editScreen
-                    return input!!-1
-                }
-                null -> println("Нужно ввести число")
-                else -> println("Нет такого пункта меню. Нужно ввести корректное число")
-            }
-        }
-    }
-    fun <T:Listable>getNew(list: MutableList<T>):String {
-        while (true) {
-            println("Введите название");
-            val input = Scanner(System.`in`).nextLine().toString()
-            if (!input.isEmpty()) {
-                if (contains(input, list)) {
-                    println("[!] Элемент с таким названием уже существует");
-                } else {
-                    return input
-                }
-            }
-        }
-    }
-
-    fun <T:Listable>list(list: MutableList<T>) {
-        println("0.Создать")
-        for (k in list.indices) {
-            println("${k+1}.${list[k].name}");
-        }
-        println("${list.size+1}.Выход")
-    }
-
     fun addText() {
-        while (true) {
-            println("(Введите текст или 0 чтобы отменить создание заметки)")
-            val input = Scanner(System.`in`).nextLine().toString()
-            if (!input.isEmpty()) {
-                when (input) {
-                    "0" -> {
-                        screen = Note.Headers.LIST.alias
-                        storage[curArchiveIndex].notes.removeAt(curNoteIndex)
-                    }
-                    else -> {
-                        storage[curArchiveIndex].notes[curNoteIndex].text = input
-                        screen = Note.Headers.SHOW.alias
-                    }
-                }
-                return
-            }
+        println("(Введите текст или Enter чтобы отменить создание заметки)")
+        val input = Scanner(System.`in`).nextLine().toString()
+        if (input.isEmpty()) {
+            screen = Note.Headers.LIST.alias
+            storage[curArchiveIndex].notes.removeAt(curNoteIndex)
+        }
+        else {
+            storage[curArchiveIndex].notes[curNoteIndex].text = input
+            screen = Note.Headers.SHOW.alias
         }
     }
 
