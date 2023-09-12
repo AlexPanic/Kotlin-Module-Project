@@ -1,3 +1,4 @@
 fun main(args: Array<String>) {
-    println("Hello World!")
+    var menu = Menu("Список архивов")
+    menu.render()
 }
